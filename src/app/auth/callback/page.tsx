@@ -1,7 +1,7 @@
 import { onAuthenticateUser } from '@/actions/user'
 import { redirect } from 'next/navigation';
 
-const DashboardPage = async() => {
+const AuthCallbackPage = async() => {
 
   const auth = await onAuthenticateUser();
 
@@ -15,4 +15,4 @@ const DashboardPage = async() => {
 
 }
 
-export default DashboardPage
+export default AuthCallbackPage
