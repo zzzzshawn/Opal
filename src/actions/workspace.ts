@@ -59,59 +59,99 @@ export const getWorkspaceFolders = async (workSpaceId: string) => {
       return { status: 200, data: isFolders };
     }
 
-    return {status: 404, data: []}
+    return { status: 404, data: [] };
   } catch (error) {
     console.log(error);
     return { status: 500, data: [] };
   }
 };
 
-
 export const getAllUserVideos = async (workSpaceId: string) => {
-    try {
-        const videos = await client.video.findMany({
-            where: {
-                OR: [
-                    {
-                        workSpaceId
-                    },
-                    {
-                        folderId: workSpaceId
-                    }
-                ]
-            },
-            select: {
+  try {
+    const videos = await client.video.findMany({
+      where: {
+        OR: [
+          {
+            workSpaceId,
+          },
+          {
+            folderId: workSpaceId,
+          },
+        ],
+      },
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        source: true,
+        processing: true,
+        Folder: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        User: {
+          select: {
+            firstname: true,
+            lastname: true,
+            image: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    if (videos && videos.length > 0) return { status: 200, data: videos };
+
+    return { status: 404, data: [] };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, data: [] };
+  }
+};
+
+export const getWorkSpaces = async () => {
+  try {
+    const user = await currentUser();
+    if (!user) return { status: 404, data: [] };
+
+    const workspaces = await client.user.findMany({
+      where: {
+        clerkid: user.id,
+      },
+      select: {
+        workspace: {
+          select: {
+            id: true,
+            name: true,
+            type: true,
+          },
+        },
+        subscription: {
+          select: {
+            plan: true,
+          },
+        },
+        members: {
+          select: {
+            WorkSpace: {
+              select: {
                 id: true,
-                title: true,
-                createdAt: true,
-                source: true,
-                processing: true,
-                Folder: {
-                    select: {
-                        id: true,
-                        name: true
-                    }
-                },
-                User: {
-                    select: {
-                        firstname: true,
-                        lastname: true,
-                        image: true
-                    }
-                }                
+                name: true,
+                type: true,
+              },
             },
-            orderBy: {
-                createdAt: 'asc'
-            }
-        })
+          },
+        },
+      },
+    });
 
-
-        if( videos && videos.length > 0) return {status: 200, data: videos}
-
-
-        return {status: 404, data: []}
-    } catch (error) {
-        console.log(error)
-        return {status: 500, data: []}
-    }
-}
+    if (workspaces) return { status: 200, data: workspaces };
+  } catch (error) {
+    console.log(error);
+    return { status: 500, data: [] };
+  }
+};

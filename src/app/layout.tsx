@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
- import { Manrope } from "next/font/google";
+import { Manrope } from "next/font/google";
 import "./globals.css";
-import {
-  ClerkProvider,
-} from "@clerk/nextjs";
-import { ThemeProvider } from "@/components/theme/theme-provider";
+import { ClerkProvider } from "@clerk/nextjs";
+// import { ThemeProvider } from "@/components/theme/theme-provider";
+import ReactQueryProvider from "@/react-query";
 
 const manrope = Manrope({ subsets: ["latin"] });
 
@@ -20,11 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-        <html lang="en">
-          <body className={`${manrope.className} bg-[#171717] text-white`}>
-            {children}
-          </body>
-        </html>
+      <html lang="en">
+        <body className={`${manrope.className} bg-[#171717] text-white`}>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }
