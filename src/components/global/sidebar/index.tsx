@@ -11,13 +11,16 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { useQueryData } from "@/hooks/useQueryData";
-import { WorkspaceProps } from "@/types";
+import { NotificationProps, WorkspaceProps } from "@/types";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React from "react";
 import Modal from "../modal";
 import { PlusCircle } from "lucide-react";
 import Search from "../search";
+import { MENU_ITEMS } from "@/constants";
+import SidebarItem from "./sidebar-item";
+import { getNotifications } from "@/actions/user";
 
 type Props = {
   activeWorkspaceId: string;
@@ -25,10 +28,19 @@ type Props = {
 
 const Sidebar = ({ activeWorkspaceId }: Props) => {
   const router = useRouter();
+  const pathName = usePathname();
+
+  const menuItems = MENU_ITEMS(activeWorkspaceId);
 
   const { data, isFetched } = useQueryData(["user-workspaces"], getWorkSpaces);
 
+  const { data: notifications } = useQueryData(
+    ['user-notifications'],
+    getNotifications
+  )
+
   const { data: workspace } = data as WorkspaceProps;
+  const { data: count } = notifications as NotificationProps;
 
   const onChangeActiveWorkspace = (value: string) => {
     router.push(`/dashboard/${value}`);
